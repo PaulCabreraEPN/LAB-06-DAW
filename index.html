@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo LocalStorage</title>
+</head>
+<body>
+    <h1>Gestión de Personajes</h1>
+    
+    <script>
+        // Función para LocalStorage
+        const guardarLocalStorage = (data) => {
+            if (data !== undefined && data !== null) {
+                try {
+                    localStorage.setItem('personaje', JSON.stringify(data));
+                } catch (error) {
+                    console.error('Error guardando en localStorage:', error);
+                }
+            } else {
+                console.warn('No se puede guardar un valor undefined o null en localStorage');
+            }
+        };
+
+        // Función para Guardar un personaje
+        const guardarPersonaje = async (idPersonaje) => {
+            try {
+                const peticion = await fetch(`https://rickandmortyapi.com/api/character/${idPersonaje}`);
+                const respuesta = await peticion.json();
+                let personaje = {
+                    id: respuesta.id,
+                    name: respuesta.name,
+                    status: respuesta.status,
+                    species: respuesta.species // Corrección aquí
+                };
+                console.log("El personaje a guardar es: ", personaje);
+                guardarLocalStorage(personaje);
+                console.log('Personaje Guardado...');
+            } catch (error) {
+                console.error('Error al obtener el personaje:', error);
+            }
+        };
+
+        // Función para obtener un personaje del LocalStorage
+        const obtenerLocalStorage = () => {
+            const personaje = localStorage.getItem('personaje');
+            const respuesta = personaje ? JSON.parse(personaje) : "No hay data";
+            console.log(respuesta);
+        };
+
+        // Función para eliminar el personaje
+        const eliminarLocalStorage = () => {
+            if (!localStorage.getItem("personaje")) {
+                console.log("No hay clave");
+            } else {
+                localStorage.removeItem("personaje");
+                console.log("Personaje eliminado.");
+            }
+        };
+
+        // Llamadas a las funciones
+        guardarPersonaje(2);
+        obtenerLocalStorage();
+        eliminarLocalStorage();
+        obtenerLocalStorage(); // Para verificar que se ha eliminado
+    </script>
+</body>
+</html>
